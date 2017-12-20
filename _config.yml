@@ -50,9 +50,9 @@ kramdown:
 disqus_username: tangshd
 
 # Duoshuo settings
-#duoshuo_username: tangshd
+duoshuo_username: ""
 # Share component is depend on Comment so we can NOT use share only.
-#duoshuo_share: true                     # set to false if you want to use Comment without Sharing
+duoshuo_share: false                     # set to false if you want to use Comment without Sharing
 
 
 
@@ -84,6 +84,9 @@ friends: [
     {
         title: "Hux Blog",
         href: "http://huangxuan.me"
+    },{
+        title: "开涛",
+        href : "http://jinnianshilongnian.iteye.com/"
     },{
         title: "KL博客",
         href: "http://www.kailing.pub/"
