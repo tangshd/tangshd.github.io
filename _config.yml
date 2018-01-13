@@ -84,14 +84,15 @@ friends: [
     {
         title: "Cristiano Ronaldo",
         href: "https://twitter.com/Cristiano?lang=zh-cn"
-    },{
-        title: "京东.张开涛",
-        href : "http://jinnianshilongnian.iteye.com/"
-    },{
-        title: "黄勇",
-        href : "https://gitee.com/huangyong"
-    },
-    {
+    }
+    # ,{
+    #     title: "京东.张开涛",
+    #     href : "http://jinnianshilongnian.iteye.com/"
+    # },{
+    #     title: "黄勇",
+    #     href : "https://gitee.com/huangyong"
+    # }
+    ,{
         title: "KL博客",
         href: "http://www.kailing.pub/"
     }
