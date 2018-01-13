@@ -3,20 +3,20 @@ title: WellCoding
 SEOTitle: 唐某某的博客 | TangXX Blog
 header-img: img/home-bg.jpg
 email: tangshd@gmail.com
-description: ""
-keyword: ""
-url: "http://WellCoding.com"              # your host, for absolute URL
+description: "一个程序世界的迷途小书童~~"
+keyword: "程序,架构,Java,Python,分布式,开源,集群,devops,大数据"
+url: "http://wellcoding.com"              # your host, for absolute URL
 baseurl: ""         # for example, '/blog' if your blog hosted on 'host/blog'
 
 
 
 # SNS settings
 RSS: false
-weibo_username:     tangshd
+#weibo_username:     tangshd
 zhihu_username:     tangshd
 github_username:    tangshd
 twitter_username:  tang20110501
-facebook_username:  tangshd
+#facebook_username:  tangshd
 
 
 
@@ -68,7 +68,7 @@ ba_track_id: 04ccab08042b140f102dfebdb0e21236
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "看看书,写写代码，听听音乐,世界那么大，简单就好!"
+sidebar-about-description: "看看书,写写代码，听听音乐;世界那么大，一切简简单单的就好!"
 sidebar-avatar: /img/tangxx.jpeg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
@@ -82,12 +82,16 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 # Friends
 friends: [
     {
-        title: "Hux Blog",
-        href: "http://huangxuan.me"
+        title: "Cristiano Ronaldo",
+        href: "https://twitter.com/Cristiano?lang=zh-cn"
     },{
-        title: "开涛",
+        title: "京东.张开涛",
         href : "http://jinnianshilongnian.iteye.com/"
     },{
+        title: "黄勇",
+        href : "https://gitee.com/huangyong"
+    },
+    {
         title: "KL博客",
         href: "http://www.kailing.pub/"
     }
