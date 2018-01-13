@@ -68,7 +68,7 @@ ba_track_id: 04ccab08042b140f102dfebdb0e21236
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "写写代码，做做设计，看看产品。世界那么大，多玩玩看看。"
+sidebar-about-description: "看看书,写写代码，听听音乐,世界那么大，简单就好!"
 sidebar-avatar: /img/tangxx.jpeg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
