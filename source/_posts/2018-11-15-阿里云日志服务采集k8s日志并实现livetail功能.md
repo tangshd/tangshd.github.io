@@ -8,7 +8,7 @@ tags:
   - livetail
   - k8s
 lang: zh-Hans
-author: keking.com
+author: 凯京.郭旭东
 ---
 
 ## 前言
