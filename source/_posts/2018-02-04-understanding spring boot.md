@@ -1,7 +1,7 @@
 ---
 layout: post
 title: understanding spring boot
-key: 20180204
+date: 2018-02-04
 tags: springboot @Enable* 
 lang: zh-Hans
 ---
