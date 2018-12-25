@@ -17,7 +17,7 @@ author: 唐某某
 ## 先贴一张思维导图
 > 参考资料：https://jimmysong.io http://www.servicemesher.com/
 
-<figure>
+  <figure>
   <a><img src="{{site.url}}/uploads/20181225/001.png"></a>
   </figure>
 
@@ -34,5 +34,3 @@ author: 唐某某
 ## Service Mesh（服务网格）
 
 ## 实际业务中的落地
-
-
