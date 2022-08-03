@@ -11,7 +11,7 @@
   </url>
   
   <url>
-    <loc>https://engining.net/categories/index.html</loc>
+    <loc>https://engining.net/books/index.html</loc>
     
     <lastmod>2022-07-24</lastmod>
     
@@ -21,15 +21,6 @@
   
   <url>
     <loc>https://engining.net/links/index.html</loc>
-    
-    <lastmod>2022-07-24</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://engining.net/books/index.html</loc>
     
     <lastmod>2022-07-24</lastmod>
     
@@ -48,6 +39,15 @@
   
   <url>
     <loc>https://engining.net/tags/index.html</loc>
+    
+    <lastmod>2022-07-24</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://engining.net/categories/index.html</loc>
     
     <lastmod>2022-07-24</lastmod>
     
@@ -287,13 +287,6 @@
   </url>
   
   <url>
-    <loc>https://engining.net/tags/springboot-Enable/</loc>
-    <lastmod>2022-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://engining.net/tags/Aspectj/</loc>
     <lastmod>2022-08-03</lastmod>
     <changefreq>weekly</changefreq>
@@ -309,6 +302,13 @@
   
   <url>
     <loc>https://engining.net/tags/spring/</loc>
+    <lastmod>2022-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://engining.net/tags/springboot-Enable/</loc>
     <lastmod>2022-08-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
