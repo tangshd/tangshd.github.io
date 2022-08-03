@@ -187,35 +187,6 @@
   </entry>
   
   <entry>
-    <title>aspectJ 编译时织入遇到的3个问题</title>
-    <link href="https://engining.net/2018/01/13/2018-01-13-aspectj%E7%BC%96%E8%AF%91%E6%97%B6%E7%BB%87%E5%85%A5%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/"/>
-    <id>https://engining.net/2018/01/13/2018-01-13-aspectj%E7%BC%96%E8%AF%91%E6%97%B6%E7%BB%87%E5%85%A5%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/</id>
-    <published>2018-01-12T16:00:00.000Z</published>
-    <updated>2021-09-27T03:01:02.447Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote><p>aspectJ 编译时织入 结合spring动态代理时遇到的3个问题：</p></blockquote><h3 id="第1个问题"><a href="#第1个问题" class="headerlink" title="第1个问题"></a>第1个问题</h3><ul><li><p>自定义注解</p><figure><a><img src="/img/in-post/20180113/pic1.png"></a></figure></li><li><p>拦截器</p><figure><a><img src="/img/in-post/20180113/pic2.png"></a></figure></li><li><p>编译后的class：</p><figure><a><img src="/img/in-post/20180113/pic3.png"></a></figure></li></ul><p>当调用 bizServcie.loanAmount时进入了2次，看编译后的类确实是调用者method和加@Voucher的metod都被编译植入了</p><p>问题出在：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@Around(&quot;@annotation(net.keking.lbt.business.vou.annotation.Voucher</span><br><span class="line">)&quot;)</span><br></pre></td></tr></table></figure><p>这个是 springaop语法，并不是aspectJ语法<br>正确的pointcut 是：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@Around(&quot;execution(@net.keking.lbt.business.vou.annotation.Voucher * *(..))&quot;)</span><br></pre></td></tr></table></figure><ul><li>目前编译后的效果：<figure><a><img src="/img/in-post/20180113/pic4.png"></a></figure></li></ul><h3 id="第2个问题"><a href="#第2个问题" class="headerlink" title="第2个问题"></a>第2个问题</h3><p>@Aspect 拦截器无法注入其它servcie的问题，因为@aspect 的注解是ACJ编译器编译的，没有纳入spring的管理<br>需要增加：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=&quot;voucherAspectJ&quot; class=&quot;net.keking.lbt.business.vou.VoucherAopHandler&quot; factory-method=&quot;aspectOf&quot;/&gt;</span><br></pre></td></tr></table></figure><p>从而纳入spring上下文容器</p><h3 id="第3个问题"><a href="#第3个问题" class="headerlink" title="第3个问题"></a>第3个问题</h3><p>如果自定义注解在project中单独的module ,如lbt-aspects， 其它moudule如何引用此自定义注解<br>POM中需要修改：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">    &lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;aspectj-maven-plugin&lt;/artifactId&gt;</span><br><span class="line">    &lt;configuration&gt;</span><br><span class="line">        &lt;aspectLibraries&gt;</span><br><span class="line">            &lt;aspectLibrary&gt;</span><br><span class="line">                &lt;groupId&gt;net.keking.lbt&lt;/groupId&gt;</span><br><span class="line">                &lt;artifactId&gt;lbt-aspects&lt;/artifactId&gt;</span><br><span class="line">            &lt;/aspectLibrary&gt;</span><br><span class="line">        &lt;/aspectLibraries&gt;</span><br><span class="line">    &lt;/configuration&gt;</span><br><span class="line">&lt;/plugin&gt;</span><br></pre></td></tr></table></figure>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;aspectJ 编译时织入 结合spring动态代理时遇到的3个问题：&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&quot;第1个问题&quot;&gt;&lt;a href=&quot;#第1个问题&quot; class=&quot;headerlink&quot; title=&quot;第1个问题&quot;&gt;&lt;/a&gt;第</summary>
-      
-    
-    
-    
-    
-    <category term="Aspectj" scheme="https://engining.net/tags/Aspectj/"/>
-    
-    <category term="aop" scheme="https://engining.net/tags/aop/"/>
-    
-    <category term="spring" scheme="https://engining.net/tags/spring/"/>
-    
-  </entry>
-  
-  <entry>
     <title>DevOps 文章分享</title>
     <link href="https://engining.net/2018/01/13/2018-01-13-DevOps%E7%9F%A5%E8%AF%86%E5%88%86%E4%BA%AB2%E7%AF%87/"/>
     <id>https://engining.net/2018/01/13/2018-01-13-DevOps%E7%9F%A5%E8%AF%86%E5%88%86%E4%BA%AB2%E7%AF%87/</id>
@@ -241,6 +212,35 @@
     <category term="大盘" scheme="https://engining.net/tags/%E5%A4%A7%E7%9B%98/"/>
     
     <category term="持续交付" scheme="https://engining.net/tags/%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>aspectJ 编译时织入遇到的3个问题</title>
+    <link href="https://engining.net/2018/01/13/2018-01-13-aspectj%E7%BC%96%E8%AF%91%E6%97%B6%E7%BB%87%E5%85%A5%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/"/>
+    <id>https://engining.net/2018/01/13/2018-01-13-aspectj%E7%BC%96%E8%AF%91%E6%97%B6%E7%BB%87%E5%85%A5%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/</id>
+    <published>2018-01-12T16:00:00.000Z</published>
+    <updated>2021-09-27T03:01:02.447Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>aspectJ 编译时织入 结合spring动态代理时遇到的3个问题：</p></blockquote><h3 id="第1个问题"><a href="#第1个问题" class="headerlink" title="第1个问题"></a>第1个问题</h3><ul><li><p>自定义注解</p><figure><a><img src="/img/in-post/20180113/pic1.png"></a></figure></li><li><p>拦截器</p><figure><a><img src="/img/in-post/20180113/pic2.png"></a></figure></li><li><p>编译后的class：</p><figure><a><img src="/img/in-post/20180113/pic3.png"></a></figure></li></ul><p>当调用 bizServcie.loanAmount时进入了2次，看编译后的类确实是调用者method和加@Voucher的metod都被编译植入了</p><p>问题出在：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@Around(&quot;@annotation(net.keking.lbt.business.vou.annotation.Voucher</span><br><span class="line">)&quot;)</span><br></pre></td></tr></table></figure><p>这个是 springaop语法，并不是aspectJ语法<br>正确的pointcut 是：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@Around(&quot;execution(@net.keking.lbt.business.vou.annotation.Voucher * *(..))&quot;)</span><br></pre></td></tr></table></figure><ul><li>目前编译后的效果：<figure><a><img src="/img/in-post/20180113/pic4.png"></a></figure></li></ul><h3 id="第2个问题"><a href="#第2个问题" class="headerlink" title="第2个问题"></a>第2个问题</h3><p>@Aspect 拦截器无法注入其它servcie的问题，因为@aspect 的注解是ACJ编译器编译的，没有纳入spring的管理<br>需要增加：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=&quot;voucherAspectJ&quot; class=&quot;net.keking.lbt.business.vou.VoucherAopHandler&quot; factory-method=&quot;aspectOf&quot;/&gt;</span><br></pre></td></tr></table></figure><p>从而纳入spring上下文容器</p><h3 id="第3个问题"><a href="#第3个问题" class="headerlink" title="第3个问题"></a>第3个问题</h3><p>如果自定义注解在project中单独的module ,如lbt-aspects， 其它moudule如何引用此自定义注解<br>POM中需要修改：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">    &lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;aspectj-maven-plugin&lt;/artifactId&gt;</span><br><span class="line">    &lt;configuration&gt;</span><br><span class="line">        &lt;aspectLibraries&gt;</span><br><span class="line">            &lt;aspectLibrary&gt;</span><br><span class="line">                &lt;groupId&gt;net.keking.lbt&lt;/groupId&gt;</span><br><span class="line">                &lt;artifactId&gt;lbt-aspects&lt;/artifactId&gt;</span><br><span class="line">            &lt;/aspectLibrary&gt;</span><br><span class="line">        &lt;/aspectLibraries&gt;</span><br><span class="line">    &lt;/configuration&gt;</span><br><span class="line">&lt;/plugin&gt;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;aspectJ 编译时织入 结合spring动态代理时遇到的3个问题：&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;第1个问题&quot;&gt;&lt;a href=&quot;#第1个问题&quot; class=&quot;headerlink&quot; title=&quot;第1个问题&quot;&gt;&lt;/a&gt;第</summary>
+      
+    
+    
+    
+    
+    <category term="Aspectj" scheme="https://engining.net/tags/Aspectj/"/>
+    
+    <category term="aop" scheme="https://engining.net/tags/aop/"/>
+    
+    <category term="spring" scheme="https://engining.net/tags/spring/"/>
     
   </entry>
   
