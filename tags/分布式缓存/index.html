@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>标签: 分布式缓存 | Hexo</title>
+  <meta name="description" content="因为信任所以简单">
+<meta property="og:type" content="website">
+<meta property="og:title" content="唐某某的blog">
+<meta property="og:url" content="https://engining.net/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/index.html">
+<meta property="og:site_name" content="唐某某的blog">
+<meta property="og:description" content="因为信任所以简单">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="tangshd">
+<meta property="article:tag" content="技术管理，生活感悟，一些代码">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://engining.net/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="唐某某的blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+    <link href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.css" rel="stylesheet">
+  
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/tangshd" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">唐某某</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">技术管理 &amp; 代码生活</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shanghai, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/tangshd" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/tangshd" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/tangshd" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/tangshd" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Aspectj/" rel="tag">Aspectj</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DevOps/" rel="tag">DevOps</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aliyun/" rel="tag">aliyun</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/" rel="tag">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ehcache/" rel="tag">ehcache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/guavacache/" rel="tag">guavacache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/" rel="tag">kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/livetail/" rel="tag">livetail</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/log4j2/" rel="tag">log4j2</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logback/" rel="tag">logback</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash/" rel="tag">logstash</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/memcache/" rel="tag">memcache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql-master-master-binlog/" rel="tag">mysql master-master binlog</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/office/" rel="tag">office</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pdf/" rel="tag">pdf</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/servicemesh/" rel="tag">servicemesh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/" rel="tag">spring</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot-Enable/" rel="tag">springboot @Enable*</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tair/" rel="tag">tair</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zip/" rel="tag">zip</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/" rel="tag">云原生</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" rel="tag">分布式缓存</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9C%A8%E7%BA%BF%E9%A2%84%E8%A7%88/" rel="tag">在线预览</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%A7%E7%9B%98/" rel="tag">大盘</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%B9%E5%99%A8%E5%8C%96/" rel="tag">容器化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90/" rel="tag">开源</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE/" rel="tag">开源协议</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag">微服务</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98/" rel="tag">持续交付</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%97%A5%E5%BF%97%E7%BB%84%E4%BB%B6/" rel="tag">日志组件</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Aspectj/" style="font-size: 13px;">Aspectj</a> <a href="/tags/DevOps/" style="font-size: 13px;">DevOps</a> <a href="/tags/Redis/" style="font-size: 13px;">Redis</a> <a href="/tags/aliyun/" style="font-size: 13px;">aliyun</a> <a href="/tags/aop/" style="font-size: 13px;">aop</a> <a href="/tags/docker/" style="font-size: 13px;">docker</a> <a href="/tags/ehcache/" style="font-size: 13px;">ehcache</a> <a href="/tags/guavacache/" style="font-size: 13px;">guavacache</a> <a href="/tags/k8s/" style="font-size: 13px;">k8s</a> <a href="/tags/kafka/" style="font-size: 13px;">kafka</a> <a href="/tags/livetail/" style="font-size: 13px;">livetail</a> <a href="/tags/log4j2/" style="font-size: 13px;">log4j2</a> <a href="/tags/logback/" style="font-size: 13px;">logback</a> <a href="/tags/logstash/" style="font-size: 13px;">logstash</a> <a href="/tags/memcache/" style="font-size: 13px;">memcache</a> <a href="/tags/mysql-master-master-binlog/" style="font-size: 13px;">mysql master-master binlog</a> <a href="/tags/office/" style="font-size: 13px;">office</a> <a href="/tags/pdf/" style="font-size: 13px;">pdf</a> <a href="/tags/servicemesh/" style="font-size: 13px;">servicemesh</a> <a href="/tags/spring/" style="font-size: 13px;">spring</a> <a href="/tags/springboot-Enable/" style="font-size: 13px;">springboot @Enable*</a> <a href="/tags/tair/" style="font-size: 13px;">tair</a> <a href="/tags/zip/" style="font-size: 13px;">zip</a> <a href="/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/" style="font-size: 13px;">云原生</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" style="font-size: 13px;">分布式缓存</a> <a href="/tags/%E5%9C%A8%E7%BA%BF%E9%A2%84%E8%A7%88/" style="font-size: 13px;">在线预览</a> <a href="/tags/%E5%A4%A7%E7%9B%98/" style="font-size: 13px;">大盘</a> <a href="/tags/%E5%AE%B9%E5%99%A8%E5%8C%96/" style="font-size: 13px;">容器化</a> <a href="/tags/%E5%BC%80%E6%BA%90/" style="font-size: 13px;">开源</a> <a href="/tags/%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE/" style="font-size: 13px;">开源协议</a> <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" style="font-size: 13px;">微服务</a> <a href="/tags/%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98/" style="font-size: 13px;">持续交付</a> <a href="/tags/%E6%97%A5%E5%BF%97%E7%BB%84%E4%BB%B6/" style="font-size: 13px;">日志组件</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2022/07/24/post-title-with-whitespace/" class="title">post title with whitespace</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-07-24T07:54:53.000Z" itemprop="datePublished">2022-07-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2022/07/24/hello-world/" class="title">Hello World</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-07-24T07:30:56.712Z" itemprop="datePublished">2022-07-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/27/2018-02-09-MySQL%E5%8F%8C%E4%B8%BB%E5%90%8C%E6%AD%A5%E8%AE%BE%E7%BD%AE/" class="title">mysql 双主同步</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-27T03:01:02.448Z" itemprop="datePublished">2021-09-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2018/12/25/2018-12-25-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%BE%AE%E6%9C%8D%E5%8A%A1servicemesh%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">云原生、微服务、servicemesh的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-24T16:00:00.000Z" itemprop="datePublished">2018-12-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2018/11/15/2018-11-15-%E9%98%BF%E9%87%8C%E4%BA%91%E6%97%A5%E5%BF%97%E6%9C%8D%E5%8A%A1%E9%87%87%E9%9B%86k8s%E6%97%A5%E5%BF%97%E5%B9%B6%E5%AE%9E%E7%8E%B0livetail%E5%8A%9F%E8%83%BD/" class="title">阿里云日志服务采集k8s日志并实现livetail功能</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-11-14T16:00:00.000Z" itemprop="datePublished">2018-11-15</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  <main class="main" role="main">
+  <article class="content article article-tags post-type-list" itemscope="">
+    <header class="article-header">
+      <h1 itemprop="name" class="hidden-xs">标签: 分布式缓存</h1>
+      <p class="text-muted hidden-xs">共 1 篇文章</p>
+      <nav role="navigation" id="nav-main" class="okayNav">
+        <ul>
+          <li><a href="/tags">All</a></li>
+          
+          <li><a href="/tags/开源/">开源</a></li>
+          
+          <li><a href="/tags/在线预览/">在线预览</a></li>
+          
+          <li><a href="/tags/office/">office</a></li>
+          
+          <li><a href="/tags/zip/">zip</a></li>
+          
+          <li><a href="/tags/pdf/">pdf</a></li>
+          
+          <li><a href="/tags/开源协议/">开源协议</a></li>
+          
+          <li><a href="/tags/DevOps/">DevOps</a></li>
+          
+          <li><a href="/tags/大盘/">大盘</a></li>
+          
+          <li><a href="/tags/持续交付/">持续交付</a></li>
+          
+          <li><a href="/tags/Aspectj/">Aspectj</a></li>
+          
+          <li><a href="/tags/aop/">aop</a></li>
+          
+          <li><a href="/tags/spring/">spring</a></li>
+          
+          <li><a href="/tags/分布式缓存/">分布式缓存</a></li>
+          
+          <li><a href="/tags/Redis/">Redis</a></li>
+          
+          <li><a href="/tags/memcache/">memcache</a></li>
+          
+          <li><a href="/tags/guavacache/">guavacache</a></li>
+          
+          <li><a href="/tags/ehcache/">ehcache</a></li>
+          
+          <li><a href="/tags/tair/">tair</a></li>
+          
+          <li><a href="/tags/aliyun/">aliyun</a></li>
+          
+          <li><a href="/tags/日志组件/">日志组件</a></li>
+          
+          <li><a href="/tags/livetail/">livetail</a></li>
+          
+          <li><a href="/tags/k8s/">k8s</a></li>
+          
+          <li><a href="/tags/springboot-Enable/">springboot @Enable*</a></li>
+          
+          <li><a href="/tags/云原生/">云原生</a></li>
+          
+          <li><a href="/tags/微服务/">微服务</a></li>
+          
+          <li><a href="/tags/servicemesh/">servicemesh</a></li>
+          
+          <li><a href="/tags/容器化/">容器化</a></li>
+          
+          <li><a href="/tags/mysql-master-master-binlog/">mysql master-master binlog</a></li>
+          
+          <li><a href="/tags/log4j2/">log4j2</a></li>
+          
+          <li><a href="/tags/logback/">logback</a></li>
+          
+          <li><a href="/tags/docker/">docker</a></li>
+          
+          <li><a href="/tags/kafka/">kafka</a></li>
+          
+          <li><a href="/tags/logstash/">logstash</a></li>
+          
+        </ul>
+      </nav>
+    </header>
+    <!-- /header -->
+    <div class="article-body">
+      <div class="row">
+        
+<div class="col-md-6">
+    
+<article class="panel panel-default hover-shadow hover-grow" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="panel-body">
+     <div class="article-meta">
+       <time datetime="2018-01-13T16:00:00.000Z" itemprop="datePublished">2018-01-14</time>
+     </div>
+     <h3 class="article-title" itemprop="name">
+       <a class="article-link" href="/2018/01/14/2018-01-14-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/">分布式缓存学习心得</a>
+     </h3>
+   </div>
+   
+   <div class="panel-footer">
+     
+      <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" class="label label-default mb">分布式缓存</a>
+     
+      <a href="/tags/Redis/" class="label label-default mb">Redis</a>
+     
+      <a href="/tags/memcache/" class="label label-default mb">memcache</a>
+     
+     
+      <span class="label label-default mb">···</span>
+     
+   </div>
+   
+</article>
+
+
+</div>
+
+      </div>
+    </div>
+  </article>
+   
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/tangshd" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/tangshd" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/tangshd" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/tangshd" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+
+
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.js"></script>
+  <script>
+  //利用 FancyBox 实现点击图片放大
+  $(document).ready(function() {
+    $('article img').not('[hidden]').not('.panel-body img').each(function() {
+      var $image = $(this);
+      var imageCaption = $image.attr('alt');
+      var $imageWrapLink = $image.parent('a');
+      if ($imageWrapLink.length < 1) {
+        var src = this.getAttribute('src');
+        var idx = src.lastIndexOf('?');
+        if (idx != -1) {
+          src = src.substring(0, idx);
+        }
+        $imageWrapLink = $image.wrap('<a href="' + src + '"></a>').parent('a');
+      }
+      $imageWrapLink.attr('data-fancybox', 'images');
+      if (imageCaption) {
+        $imageWrapLink.attr('data-caption', imageCaption);
+      }
+    });
+    $().fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+    });
+  });
+  </script>
+
+
+
+
+
+</body>
+</html>
