@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>mysql 双主同步 | 唐某某的博客</title>
+  <meta name="description" content="本文转载自https:&#x2F;&#x2F;github.com&#x2F;sxyx2008&#x2F;DevArticles  Ubuntu 12.04.5   MySQL 5.5.47   master1 192.168.64.131   master2 192.168.64.132  1. 修改mysql配置文件、创建帐号并授权1.1 修改master1上mysql配置文件my.conf12345678910[mysqld]se">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql 双主同步">
+<meta property="og:url" content="https://engining.net/2021/09/27/2018-02-09-MySQL%E5%8F%8C%E4%B8%BB%E5%90%8C%E6%AD%A5%E8%AE%BE%E7%BD%AE/index.html">
+<meta property="og:site_name" content="唐某某的blog">
+<meta property="og:description" content="本文转载自https:&#x2F;&#x2F;github.com&#x2F;sxyx2008&#x2F;DevArticles  Ubuntu 12.04.5   MySQL 5.5.47   master1 192.168.64.131   master2 192.168.64.132  1. 修改mysql配置文件、创建帐号并授权1.1 修改master1上mysql配置文件my.conf12345678910[mysqld]se">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-09-27T03:01:02.448Z">
+<meta property="article:modified_time" content="2022-08-03T11:15:06.374Z">
+<meta property="article:author" content="tangshd">
+<meta property="article:tag" content="mysql">
+<meta property="article:tag" content="master-master binlog">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://engining.net/2021/09/27/2018-02-09-MySQL%E5%8F%8C%E4%B8%BB%E5%90%8C%E6%AD%A5%E8%AE%BE%E7%BD%AE/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="唐某某的blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+    <link href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.css" rel="stylesheet">
+  
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body class="main-center theme-black no-sidebar" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/tangshd" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">唐某某</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">技术管理 &amp; 代码生活</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shanghai, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/tangshd" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/tangshd" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/tangshd" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cache/">cache</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/hexo/">hexo</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/spring/">spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BC%80%E6%BA%90/">开源</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Aspectj/" rel="tag">Aspectj</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aliyun/" rel="tag">aliyun</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/" rel="tag">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ehcache/" rel="tag">ehcache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/guavacache/" rel="tag">guavacache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/livetail/" rel="tag">livetail</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/master-master-binlog/" rel="tag">master-master binlog</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/memcache/" rel="tag">memcache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/office-zip-pdf/" rel="tag">office zip pdf</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/quick-start/" rel="tag">quick start</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tair/" rel="tag">tair</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/theme/" rel="tag">theme</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" rel="tag">分布式缓存</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9C%A8%E7%BA%BF%E9%A2%84%E8%A7%88/" rel="tag">在线预览</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90/" rel="tag">开源</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE/" rel="tag">开源协议</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%97%A5%E5%BF%97%E5%BD%92%E9%9B%86/" rel="tag">日志归集</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%97%A5%E5%BF%97%E7%BB%84%E4%BB%B6/" rel="tag">日志组件</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Aspectj/" style="font-size: 13px;">Aspectj</a> <a href="/tags/Redis/" style="font-size: 13px;">Redis</a> <a href="/tags/aliyun/" style="font-size: 13px;">aliyun</a> <a href="/tags/aop/" style="font-size: 13px;">aop</a> <a href="/tags/ehcache/" style="font-size: 13px;">ehcache</a> <a href="/tags/guavacache/" style="font-size: 13px;">guavacache</a> <a href="/tags/k8s/" style="font-size: 13px;">k8s</a> <a href="/tags/livetail/" style="font-size: 13px;">livetail</a> <a href="/tags/master-master-binlog/" style="font-size: 13px;">master-master binlog</a> <a href="/tags/memcache/" style="font-size: 13px;">memcache</a> <a href="/tags/mysql/" style="font-size: 13px;">mysql</a> <a href="/tags/office-zip-pdf/" style="font-size: 13px;">office zip pdf</a> <a href="/tags/quick-start/" style="font-size: 13px;">quick start</a> <a href="/tags/tair/" style="font-size: 13px;">tair</a> <a href="/tags/theme/" style="font-size: 13px;">theme</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" style="font-size: 13px;">分布式缓存</a> <a href="/tags/%E5%9C%A8%E7%BA%BF%E9%A2%84%E8%A7%88/" style="font-size: 13px;">在线预览</a> <a href="/tags/%E5%BC%80%E6%BA%90/" style="font-size: 13px;">开源</a> <a href="/tags/%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE/" style="font-size: 13px;">开源协议</a> <a href="/tags/%E6%97%A5%E5%BF%97%E5%BD%92%E9%9B%86/" style="font-size: 13px;">日志归集</a> <a href="/tags/%E6%97%A5%E5%BF%97%E7%BB%84%E4%BB%B6/" style="font-size: 13px;">日志组件</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/hexo/">hexo</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/07/24/post-title-with-whitespace/" class="title">how to use hexo theme - pure</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-07-24T04:54:53.000Z" itemprop="datePublished">2022-07-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/hexo/">hexo</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/07/22/hello-world/" class="title">Hello Hexo</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-07-22T07:54:53.000Z" itemprop="datePublished">2022-07-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/mysql/">mysql</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/27/2018-02-09-MySQL%E5%8F%8C%E4%B8%BB%E5%90%8C%E6%AD%A5%E8%AE%BE%E7%BD%AE/" class="title">mysql 双主同步</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-27T03:01:02.448Z" itemprop="datePublished">2021-09-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/DevOps/">DevOps</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/11/15/2018-11-15-%E9%98%BF%E9%87%8C%E4%BA%91%E6%97%A5%E5%BF%97%E6%9C%8D%E5%8A%A1%E9%87%87%E9%9B%86k8s%E6%97%A5%E5%BF%97%E5%B9%B6%E5%AE%9E%E7%8E%B0livetail%E5%8A%9F%E8%83%BD/" class="title">阿里云日志服务采集k8s日志并实现livetail功能</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-11-14T16:00:00.000Z" itemprop="datePublished">2018-11-15</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/cache/">cache</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/01/14/2018-01-14-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" class="title">分布式缓存学习心得</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-01-13T16:00:00.000Z" itemprop="datePublished">2018-01-14</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+  <aside class="sidebar sidebar-toc collapse   in  " id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%BF%AE%E6%94%B9mysql%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E3%80%81%E5%88%9B%E5%BB%BA%E5%B8%90%E5%8F%B7%E5%B9%B6%E6%8E%88%E6%9D%83"><span class="toc-number">1.</span> <span class="toc-text">1. 修改mysql配置文件、创建帐号并授权</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-%E4%BF%AE%E6%94%B9master1%E4%B8%8Amysql%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6my-conf"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 修改master1上mysql配置文件my.conf</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%B8%90%E5%8F%B7%E5%AF%86%E7%A0%81%E5%B9%B6%E6%8E%88%E6%9D%83"><span class="toc-number">1.1.1.</span> <span class="toc-text">创建帐号密码并授权</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9C%A8192-168-64-132%E6%B5%8B%E8%AF%95repuser%E6%98%AF%E5%90%A6%E8%83%BD%E7%99%BB%E5%BD%95192-168-64-131%E4%B8%8A%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.1.2.</span> <span class="toc-text">在192.168.64.132测试repuser是否能登录192.168.64.131上的数据库</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-%E4%BF%AE%E6%94%B9master2%E4%B8%8Amysql%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6my-conf"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 修改master2上mysql配置文件my.conf</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%B8%90%E5%8F%B7%E5%AF%86%E7%A0%81%E5%B9%B6%E6%8E%88%E6%9D%83-1"><span class="toc-number">1.2.1.</span> <span class="toc-text">创建帐号密码并授权</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9C%A8192-168-64-131%E6%B5%8B%E8%AF%95repuser%E6%98%AF%E5%90%A6%E8%83%BD%E7%99%BB%E5%BD%95192-168-64-132%E4%B8%8A%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.2.2.</span> <span class="toc-text">在192.168.64.131测试repuser是否能登录192.168.64.132上的数据库</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%85%8D%E7%BD%AE%E5%8F%8C%E4%B8%BB%E5%90%8C%E6%AD%A5"><span class="toc-number">2.</span> <span class="toc-text">2. 配置双主同步</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8Bmaster%E7%8A%B6%E6%80%81"><span class="toc-number">2.1.</span> <span class="toc-text">查看master状态</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AEmaster1%E4%BB%8Emaster2%E5%90%8C%E6%AD%A5"><span class="toc-number">2.2.</span> <span class="toc-text">设置master1从master2同步</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AEmaster2%E4%BB%8Emaster1%E5%90%8C%E6%AD%A5"><span class="toc-number">2.3.</span> <span class="toc-text">设置master2从master1同步</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%8F%8C%E4%B8%BB%E5%90%8C%E6%AD%A5%E6%B5%8B%E8%AF%95"><span class="toc-number">3.</span> <span class="toc-text">3 双主同步测试</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-2018-02-09-MySQL双主同步设置" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      mysql 双主同步
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/09/27/2018-02-09-MySQL%E5%8F%8C%E4%B8%BB%E5%90%8C%E6%AD%A5%E8%AE%BE%E7%BD%AE/" class="article-date">
+	  <time datetime="2021-09-27T03:01:02.448Z" itemprop="datePublished">2021-09-27</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/mysql/">mysql</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/master-master-binlog/" rel="tag">master-master binlog</a>, <a class="article-tag-link-link" href="/tags/mysql/" rel="tag">mysql</a>
+  </span>
+
+
+        
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2021/09/27/2018-02-09-MySQL%E5%8F%8C%E4%B8%BB%E5%90%8C%E6%AD%A5%E8%AE%BE%E7%BD%AE/" class="leancloud_visitors"  data-flag-title="mysql 双主同步">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/09/27/2018-02-09-MySQL%E5%8F%8C%E4%B8%BB%E5%90%8C%E6%AD%A5%E8%AE%BE%E7%BD%AE/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 5(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>本文转载自<a target="_blank" rel="noopener" href="https://github.com/sxyx2008/DevArticles">https://github.com/sxyx2008/DevArticles</a></p>
+<blockquote>
+<p>Ubuntu 12.04.5</p>
+</blockquote>
+<blockquote>
+<p>MySQL 5.5.47</p>
+</blockquote>
+<blockquote>
+<p>master1 192.168.64.131</p>
+</blockquote>
+<blockquote>
+<p>master2 192.168.64.132</p>
+</blockquote>
+<h3 id="1-修改mysql配置文件、创建帐号并授权"><a href="#1-修改mysql配置文件、创建帐号并授权" class="headerlink" title="1. 修改mysql配置文件、创建帐号并授权"></a>1. 修改mysql配置文件、创建帐号并授权</h3><h4 id="1-1-修改master1上mysql配置文件my-conf"><a href="#1-1-修改master1上mysql配置文件my-conf" class="headerlink" title="1.1 修改master1上mysql配置文件my.conf"></a>1.1 修改master1上mysql配置文件my.conf</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">server-id           = 131				#数据库ID</span><br><span class="line">log_bin             = /var/log/mysql/mysql-bin.log	#启用二进制日志 如果没有var/log/mysql这个目录，则需要创建.</span><br><span class="line">#binlog-do-db		= tudou1			#需要同步的数据库,这里同步tudou1和tudou2两个数据库</span><br><span class="line">#binlog-do-db		= tudou2</span><br><span class="line">binlog-ignore-db	= mysql				#忽略同步的数据库</span><br><span class="line">log-slave-updates						#把从库的写操作记录到binlog中 （缺少之后，双主创建失败）</span><br><span class="line">expire_logs_days	= 365				#日志文件过期天数，默认是 0，表示不过期</span><br><span class="line">auto-increment-increment= 2				#设定为主服务器的数量，防止auto_increment字段重复</span><br><span class="line">auto-increment-offset	= 1				#自增长字段的初始值，在多台master环境下，不会出现自增长ID重复</span><br></pre></td></tr></table></figure>
+
+<h5 id="创建帐号密码并授权"><a href="#创建帐号密码并授权" class="headerlink" title="创建帐号密码并授权"></a>创建帐号密码并授权</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GRANT REPLICATION SLAVE ON *.* TO &#x27;repuser&#x27;@&#x27;192.168.64.132&#x27; IDENTIFIED BY &#x27;repuser&#x27;;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+
+<h5 id="在192-168-64-132测试repuser是否能登录192-168-64-131上的数据库"><a href="#在192-168-64-132测试repuser是否能登录192-168-64-131上的数据库" class="headerlink" title="在192.168.64.132测试repuser是否能登录192.168.64.131上的数据库"></a>在192.168.64.132测试repuser是否能登录192.168.64.131上的数据库</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@192.168.64.132:~/apps$ mysql -urepuser -prepuser -h192.168.64.131</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-修改master2上mysql配置文件my-conf"><a href="#1-2-修改master2上mysql配置文件my-conf" class="headerlink" title="1.2 修改master2上mysql配置文件my.conf"></a>1.2 修改master2上mysql配置文件my.conf</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">server-id           = 132				#数据库ID</span><br><span class="line">log_bin             = /var/log/mysql/mysql-bin.log	#启用二进制日志 如果没有var/log/mysql这个目录，则需要创建.</span><br><span class="line">#binlog-do-db		= tudou1			#需要同步的数据库,这里同步tudou1和tudou2两个数据库</span><br><span class="line">#binlog-do-db		= tudou2</span><br><span class="line">binlog-ignore-db	= mysql				#忽略同步的数据库</span><br><span class="line">log-slave-updates						#把从库的写操作记录到binlog中 （缺少之后，双主创建失败）</span><br><span class="line">expire_logs_days	= 365				#日志文件过期天数，默认是 0，表示不过期</span><br><span class="line">auto-increment-increment= 2				#设定为主服务器的数量，防止auto_increment字段重复</span><br><span class="line">auto-increment-offset	= 1				#自增长字段的初始值，在多台master环境下，不会出现自增长ID重复</span><br></pre></td></tr></table></figure>
+
+<h5 id="创建帐号密码并授权-1"><a href="#创建帐号密码并授权-1" class="headerlink" title="创建帐号密码并授权"></a>创建帐号密码并授权</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GRANT REPLICATION SLAVE ON *.* TO &#x27;repuser&#x27;@&#x27;192.168.64.131&#x27; IDENTIFIED BY &#x27;repuser&#x27;;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+
+<h5 id="在192-168-64-131测试repuser是否能登录192-168-64-132上的数据库"><a href="#在192-168-64-131测试repuser是否能登录192-168-64-132上的数据库" class="headerlink" title="在192.168.64.131测试repuser是否能登录192.168.64.132上的数据库"></a>在192.168.64.131测试repuser是否能登录192.168.64.132上的数据库</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@192.168.64.131:~/apps$ mysql -urepuser -prepuser -h192.168.64.132</span><br></pre></td></tr></table></figure>
+
+<p><em>注意：</em></p>
+<ul>
+<li><p>log-slave-updates 表示把从库的写操作记录到binlog中，缺少之后，双主创建失败。双主同步时该项必须有</p>
+</li>
+<li><p>binlog-do-db 表示需要同步的数据库可出现多个，上述配置中注释掉了，若开启该配置项则格式见上述配置</p>
+</li>
+<li><p>binlog-ignore-db 表示忽略同步的数据库</p>
+</li>
+</ul>
+<h3 id="2-配置双主同步"><a href="#2-配置双主同步" class="headerlink" title="2. 配置双主同步"></a>2. 配置双主同步</h3><h4 id="查看master状态"><a href="#查看master状态" class="headerlink" title="查看master状态"></a>查看master状态</h4><p>master1中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show master status;</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| mysql-bin.000001 |      107 |              | mysql            |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>master2中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show master status;</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| mysql-bin.000001 |      107 |              | mysql            |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<h4 id="设置master1从master2同步"><a href="#设置master1从master2同步" class="headerlink" title="设置master1从master2同步"></a>设置master1从master2同步</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CHANGE MASTER TO MASTER_HOST=&#x27;192.168.64.132&#x27;,MASTER_PORT=3306,MASTER_USER=&#x27;repuser&#x27;,MASTER_PASSWORD=&#x27;repuser&#x27;,MASTER_LOG_FILE=&#x27;mysql-bin.000001&#x27;,MASTER_LOG_POS=107;</span><br><span class="line">mysql&gt; SHOW SLAVE STATUS\G</span><br><span class="line">mysql&gt; START SLAVE;</span><br><span class="line">mysql&gt; SHOW SLAVE STATUS\G</span><br></pre></td></tr></table></figure>
+
+<p>如出现以下两项，则说明配置成功！</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: Yes</span><br></pre></td></tr></table></figure>
+
+<h4 id="设置master2从master1同步"><a href="#设置master2从master1同步" class="headerlink" title="设置master2从master1同步"></a>设置master2从master1同步</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CHANGE MASTER TO MASTER_HOST=&#x27;192.168.64.131&#x27;,MASTER_PORT=3306,MASTER_USER=&#x27;repuser&#x27;,MASTER_PASSWORD=&#x27;repuser&#x27;,MASTER_LOG_FILE=&#x27;mysql-bin.000001&#x27;,MASTER_LOG_POS=107;</span><br><span class="line">mysql&gt; SHOW SLAVE STATUS\G</span><br><span class="line">mysql&gt; START SLAVE;</span><br><span class="line">mysql&gt; SHOW SLAVE STATUS\G</span><br></pre></td></tr></table></figure>
+
+<p>如出现以下两项，则说明配置成功！</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: Yes</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-双主同步测试"><a href="#3-双主同步测试" class="headerlink" title="3 双主同步测试"></a>3 双主同步测试</h3><p>进入master1 mysql 数据库</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;  create database crm;</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  use crm;</span><br><span class="line">Database changed</span><br><span class="line">mysql&gt;  create table employee(id int auto_increment,name varchar(10),primary key(id));</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  insert into employee(name) values(&#x27;a&#x27;);</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  insert into employee(name) values(&#x27;b&#x27;);</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  insert into employee(name) values(&#x27;c&#x27;);</span><br><span class="line">Query OK, 1 row affected (0.06 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  select * from employee;</span><br><span class="line">+----+------+</span><br><span class="line">| id | name |</span><br><span class="line">+----+------+</span><br><span class="line">|  1 | a    |</span><br><span class="line">|  3 | b    |</span><br><span class="line">|  5 | c    |</span><br><span class="line">+----+------+</span><br><span class="line">3 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>进入master2，查看是否有crm这个数据库和employee表。</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;  show databases;</span><br><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| crm                |</span><br><span class="line">| mysql              |</span><br><span class="line">| performance_schema |</span><br><span class="line">+--------------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  use crm;</span><br><span class="line">Reading table information for completion of table and column names</span><br><span class="line">You can turn off this feature to get a quicker startup with -A</span><br><span class="line"></span><br><span class="line">Database changed</span><br><span class="line">mysql&gt;  show tables;</span><br><span class="line">+---------------+</span><br><span class="line">| Tables_in_crm |</span><br><span class="line">+---------------+</span><br><span class="line">| employee      |</span><br><span class="line">+---------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  select * from employee;</span><br><span class="line">+----+------+</span><br><span class="line">| id | name |</span><br><span class="line">+----+------+</span><br><span class="line">|  1 | a    |</span><br><span class="line">|  3 | b    |</span><br><span class="line">|  5 | c    |</span><br><span class="line">+----+------+</span><br><span class="line">3 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  insert into employee(name) values(&#x27;d&#x27;);</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  select * from employee;</span><br><span class="line">+----+------+</span><br><span class="line">| id | name |</span><br><span class="line">+----+------+</span><br><span class="line">|  1 | a    |</span><br><span class="line">|  3 | b    |</span><br><span class="line">|  5 | c    |</span><br><span class="line">|  7 | d    |</span><br><span class="line">+----+------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>在master1的中查看是否有刚刚在master2中插入的数据。</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> mysql&gt;  select * from employee;</span><br><span class="line">+----+------+</span><br><span class="line">| id | name |</span><br><span class="line">+----+------+</span><br><span class="line">|  1 | a    |</span><br><span class="line">|  3 | b    |</span><br><span class="line">|  5 | c    |</span><br><span class="line">|  7 | d    |</span><br><span class="line">+----+------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://engining.net/2021/09/27/2018-02-09-MySQL%E5%8F%8C%E4%B8%BB%E5%90%8C%E6%AD%A5%E8%AE%BE%E7%BD%AE/" title="mysql 双主同步" target="_blank" rel="external">https://engining.net/2021/09/27/2018-02-09-MySQL双主同步设置/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/tangshd" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/tangshd" target="_blank"><span class="text-dark">唐某某</span><small class="ml-1x">技术管理 &amp; 代码生活</small></a></h3>
+        <div>个人简介</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2022/07/22/hello-world/" title="Hello Hexo"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2018/11/15/2018-11-15-%E9%98%BF%E9%87%8C%E4%BA%91%E6%97%A5%E5%BF%97%E6%9C%8D%E5%8A%A1%E9%87%87%E9%9B%86k8s%E6%97%A5%E5%BF%97%E5%B9%B6%E5%AE%9E%E7%8E%B0livetail%E5%8A%9F%E8%83%BD/" title="阿里云日志服务采集k8s日志并实现livetail功能"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn " data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">    <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/tangshd" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/tangshd" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/tangshd" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 tangshd
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'PBtxo1zq1zW0K5pIYqD1FvFC-gzGzoHsz',
+    appKey: '81yKJXPf9TR7vsnqW2R7NJ3x',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.js"></script>
+  <script>
+  //利用 FancyBox 实现点击图片放大
+  $(document).ready(function() {
+    $('article img').not('[hidden]').not('.panel-body img').each(function() {
+      var $image = $(this);
+      var imageCaption = $image.attr('alt');
+      var $imageWrapLink = $image.parent('a');
+      if ($imageWrapLink.length < 1) {
+        var src = this.getAttribute('src');
+        var idx = src.lastIndexOf('?');
+        if (idx != -1) {
+          src = src.substring(0, idx);
+        }
+        $imageWrapLink = $image.wrap('<a href="' + src + '"></a>').parent('a');
+      }
+      $imageWrapLink.attr('data-fancybox', 'images');
+      if (imageCaption) {
+        $imageWrapLink.attr('data-caption', imageCaption);
+      }
+    });
+    $().fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+    });
+  });
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>分布式缓存学习心得 | 唐某某的博客</title>
+  <meta name="description" content="缓存为王 音乐是时间的艺术,缓存是软件时间的艺术  1. 客户端缓存2. 页面缓存2.1 浏览器缓存 2.2 APP上的缓存 3. 网络中的缓存3.1 web代理缓存  squid  3.2 边缘缓存  varinish CDN cloud front in aws china cache    4. 服务端的缓存4.1 数据库缓存 4.2 平台级缓存  一级缓存  4.2 应用级缓存  REDI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式缓存学习心得">
+<meta property="og:url" content="https://engining.net/2018/01/14/2018-01-14-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/index.html">
+<meta property="og:site_name" content="唐某某的blog">
+<meta property="og:description" content="缓存为王 音乐是时间的艺术,缓存是软件时间的艺术  1. 客户端缓存2. 页面缓存2.1 浏览器缓存 2.2 APP上的缓存 3. 网络中的缓存3.1 web代理缓存  squid  3.2 边缘缓存  varinish CDN cloud front in aws china cache    4. 服务端的缓存4.1 数据库缓存 4.2 平台级缓存  一级缓存  4.2 应用级缓存  REDI">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-08-03T11:14:34.908Z">
+<meta property="article:author" content="tangshd">
+<meta property="article:tag" content="分布式缓存">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="memcache">
+<meta property="article:tag" content="guavacache">
+<meta property="article:tag" content="ehcache">
+<meta property="article:tag" content="tair">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://engining.net/2018/01/14/2018-01-14-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="唐某某的blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+    <link href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.css" rel="stylesheet">
+  
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body class="main-center theme-black no-sidebar" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/tangshd" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">唐某某</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">技术管理 &amp; 代码生活</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shanghai, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/tangshd" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/tangshd" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/tangshd" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cache/">cache</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/hexo/">hexo</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/spring/">spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BC%80%E6%BA%90/">开源</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Aspectj/" rel="tag">Aspectj</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aliyun/" rel="tag">aliyun</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/" rel="tag">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ehcache/" rel="tag">ehcache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/guavacache/" rel="tag">guavacache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/livetail/" rel="tag">livetail</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/master-master-binlog/" rel="tag">master-master binlog</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/memcache/" rel="tag">memcache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/office-zip-pdf/" rel="tag">office zip pdf</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/quick-start/" rel="tag">quick start</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tair/" rel="tag">tair</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/theme/" rel="tag">theme</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" rel="tag">分布式缓存</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9C%A8%E7%BA%BF%E9%A2%84%E8%A7%88/" rel="tag">在线预览</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90/" rel="tag">开源</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE/" rel="tag">开源协议</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%97%A5%E5%BF%97%E5%BD%92%E9%9B%86/" rel="tag">日志归集</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%97%A5%E5%BF%97%E7%BB%84%E4%BB%B6/" rel="tag">日志组件</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Aspectj/" style="font-size: 13px;">Aspectj</a> <a href="/tags/Redis/" style="font-size: 13px;">Redis</a> <a href="/tags/aliyun/" style="font-size: 13px;">aliyun</a> <a href="/tags/aop/" style="font-size: 13px;">aop</a> <a href="/tags/ehcache/" style="font-size: 13px;">ehcache</a> <a href="/tags/guavacache/" style="font-size: 13px;">guavacache</a> <a href="/tags/k8s/" style="font-size: 13px;">k8s</a> <a href="/tags/livetail/" style="font-size: 13px;">livetail</a> <a href="/tags/master-master-binlog/" style="font-size: 13px;">master-master binlog</a> <a href="/tags/memcache/" style="font-size: 13px;">memcache</a> <a href="/tags/mysql/" style="font-size: 13px;">mysql</a> <a href="/tags/office-zip-pdf/" style="font-size: 13px;">office zip pdf</a> <a href="/tags/quick-start/" style="font-size: 13px;">quick start</a> <a href="/tags/tair/" style="font-size: 13px;">tair</a> <a href="/tags/theme/" style="font-size: 13px;">theme</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" style="font-size: 13px;">分布式缓存</a> <a href="/tags/%E5%9C%A8%E7%BA%BF%E9%A2%84%E8%A7%88/" style="font-size: 13px;">在线预览</a> <a href="/tags/%E5%BC%80%E6%BA%90/" style="font-size: 13px;">开源</a> <a href="/tags/%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE/" style="font-size: 13px;">开源协议</a> <a href="/tags/%E6%97%A5%E5%BF%97%E5%BD%92%E9%9B%86/" style="font-size: 13px;">日志归集</a> <a href="/tags/%E6%97%A5%E5%BF%97%E7%BB%84%E4%BB%B6/" style="font-size: 13px;">日志组件</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/hexo/">hexo</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/07/24/post-title-with-whitespace/" class="title">how to use hexo theme - pure</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-07-24T04:54:53.000Z" itemprop="datePublished">2022-07-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/hexo/">hexo</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/07/22/hello-world/" class="title">Hello Hexo</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-07-22T07:54:53.000Z" itemprop="datePublished">2022-07-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/mysql/">mysql</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/27/2018-02-09-MySQL%E5%8F%8C%E4%B8%BB%E5%90%8C%E6%AD%A5%E8%AE%BE%E7%BD%AE/" class="title">mysql 双主同步</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-27T03:01:02.448Z" itemprop="datePublished">2021-09-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/DevOps/">DevOps</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/11/15/2018-11-15-%E9%98%BF%E9%87%8C%E4%BA%91%E6%97%A5%E5%BF%97%E6%9C%8D%E5%8A%A1%E9%87%87%E9%9B%86k8s%E6%97%A5%E5%BF%97%E5%B9%B6%E5%AE%9E%E7%8E%B0livetail%E5%8A%9F%E8%83%BD/" class="title">阿里云日志服务采集k8s日志并实现livetail功能</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-11-14T16:00:00.000Z" itemprop="datePublished">2018-11-15</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/cache/">cache</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/01/14/2018-01-14-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" class="title">分布式缓存学习心得</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-01-13T16:00:00.000Z" itemprop="datePublished">2018-01-14</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+  <aside class="sidebar sidebar-toc collapse   in  " id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E4%B8%BA%E7%8E%8B"><span class="toc-number">1.</span> <span class="toc-text">缓存为王</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%BC%93%E5%AD%98"><span class="toc-number">1.1.</span> <span class="toc-text">1. 客户端缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%A1%B5%E9%9D%A2%E7%BC%93%E5%AD%98"><span class="toc-number">1.2.</span> <span class="toc-text">2. 页面缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%BD%91%E7%BB%9C%E4%B8%AD%E7%9A%84%E7%BC%93%E5%AD%98"><span class="toc-number">1.3.</span> <span class="toc-text">3. 网络中的缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%9A%84%E7%BC%93%E5%AD%98"><span class="toc-number">1.4.</span> <span class="toc-text">4. 服务端的缓存</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E7%90%86%E8%AE%BA"><span class="toc-number">2.</span> <span class="toc-text">分布式系统理论</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-2018-01-14-分布式缓存" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      分布式缓存学习心得
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2018/01/14/2018-01-14-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" class="article-date">
+	  <time datetime="2018-01-13T16:00:00.000Z" itemprop="datePublished">2018-01-14</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/cache/">cache</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Redis/" rel="tag">Redis</a>, <a class="article-tag-link-link" href="/tags/ehcache/" rel="tag">ehcache</a>, <a class="article-tag-link-link" href="/tags/guavacache/" rel="tag">guavacache</a>, <a class="article-tag-link-link" href="/tags/memcache/" rel="tag">memcache</a>, <a class="article-tag-link-link" href="/tags/tair/" rel="tag">tair</a>, <a class="article-tag-link-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" rel="tag">分布式缓存</a>
+  </span>
+
+
+        
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2018/01/14/2018-01-14-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" class="leancloud_visitors"  data-flag-title="分布式缓存学习心得">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2018/01/14/2018-01-14-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 168(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="缓存为王"><a href="#缓存为王" class="headerlink" title="缓存为王"></a>缓存为王</h2><blockquote>
+<p>音乐是时间的艺术,缓存是软件时间的艺术</p>
+</blockquote>
+<h3 id="1-客户端缓存"><a href="#1-客户端缓存" class="headerlink" title="1. 客户端缓存"></a>1. 客户端缓存</h3><h3 id="2-页面缓存"><a href="#2-页面缓存" class="headerlink" title="2. 页面缓存"></a>2. 页面缓存</h3><p>2.1 浏览器缓存</p>
+<p>2.2 APP上的缓存</p>
+<h3 id="3-网络中的缓存"><a href="#3-网络中的缓存" class="headerlink" title="3. 网络中的缓存"></a>3. 网络中的缓存</h3><p>3.1 web代理缓存</p>
+<ul>
+<li>squid</li>
+</ul>
+<p>3.2 边缘缓存</p>
+<ul>
+<li>varinish</li>
+<li>CDN<ul>
+<li>cloud front in aws</li>
+<li>china cache</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-服务端的缓存"><a href="#4-服务端的缓存" class="headerlink" title="4. 服务端的缓存"></a>4. 服务端的缓存</h3><p>4.1 数据库缓存</p>
+<p>4.2 平台级缓存</p>
+<blockquote>
+<p>一级缓存</p>
+</blockquote>
+<p>4.2 应用级缓存</p>
+<ul>
+<li><p>REDIS 集群</p>
+<ul>
+<li><p>中间件twemproxy:</p>
+<blockquote>
+<p> <a target="_blank" rel="noopener" href="https://github.com/twitter/twemproxy">https://github.com/twitter/twemproxy</a></p>
+</blockquote>
+</li>
+<li><p>redis4.0、codis、阿里云redis 3种redis集群对比分析</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://yq.aliyun.com/articles/68593?utm_campaign=wenzhang&amp;utm_medium=article&amp;utm_source=QQ-qun&amp;utm_content=m_10099">https://yq.aliyun.com/articles/68593?utm_campaign=wenzhang&amp;utm_medium=article&amp;utm_source=QQ-qun&amp;utm_content=m_10099</a></p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>多级缓存</p>
+</li>
+</ul>
+<h2 id="分布式系统理论"><a href="#分布式系统理论" class="headerlink" title="分布式系统理论"></a>分布式系统理论</h2><blockquote>
+<p>未完继续</p>
+</blockquote>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://engining.net/2018/01/14/2018-01-14-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/" title="分布式缓存学习心得" target="_blank" rel="external">https://engining.net/2018/01/14/2018-01-14-分布式缓存/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/tangshd" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/tangshd" target="_blank"><span class="text-dark">唐某某</span><small class="ml-1x">技术管理 &amp; 代码生活</small></a></h3>
+        <div>个人简介</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2018/11/15/2018-11-15-%E9%98%BF%E9%87%8C%E4%BA%91%E6%97%A5%E5%BF%97%E6%9C%8D%E5%8A%A1%E9%87%87%E9%9B%86k8s%E6%97%A5%E5%BF%97%E5%B9%B6%E5%AE%9E%E7%8E%B0livetail%E5%8A%9F%E8%83%BD/" title="阿里云日志服务采集k8s日志并实现livetail功能"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2018/01/13/2018-01-13-aspectj%E7%BC%96%E8%AF%91%E6%97%B6%E7%BB%87%E5%85%A5%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/" title="aspectJ 编译时织入遇到的3个问题"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn " data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">    <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/tangshd" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/tangshd" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/tangshd" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 tangshd
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'PBtxo1zq1zW0K5pIYqD1FvFC-gzGzoHsz',
+    appKey: '81yKJXPf9TR7vsnqW2R7NJ3x',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.js"></script>
+  <script>
+  //利用 FancyBox 实现点击图片放大
+  $(document).ready(function() {
+    $('article img').not('[hidden]').not('.panel-body img').each(function() {
+      var $image = $(this);
+      var imageCaption = $image.attr('alt');
+      var $imageWrapLink = $image.parent('a');
+      if ($imageWrapLink.length < 1) {
+        var src = this.getAttribute('src');
+        var idx = src.lastIndexOf('?');
+        if (idx != -1) {
+          src = src.substring(0, idx);
+        }
+        $imageWrapLink = $image.wrap('<a href="' + src + '"></a>').parent('a');
+      }
+      $imageWrapLink.attr('data-fancybox', 'images');
+      if (imageCaption) {
+        $imageWrapLink.attr('data-caption', imageCaption);
+      }
+    });
+    $().fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+    });
+  });
+  </script>
+
+
+
+
+
+</body>
+</html>
