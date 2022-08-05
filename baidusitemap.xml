@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://engining.net/2022/08/05/%E4%BD%BF%E7%94%A8hexo%E4%B8%AD%E7%9A%84%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</loc>
+    <lastmod>2022-08-05</lastmod>
+  </url>
+  <url>
     <loc>https://engining.net/2018/01/02/2018-01-02-%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE/</loc>
     <lastmod>2022-08-03</lastmod>
   </url>
@@ -13,7 +17,7 @@
     <lastmod>2022-08-03</lastmod>
   </url>
   <url>
-    <loc>https://engining.net/2022/07/24/post-title-with-whitespace/</loc>
+    <loc>https://engining.net/2022/07/24/how-to-use-hexo-pure%20/</loc>
     <lastmod>2022-08-03</lastmod>
   </url>
   <url>

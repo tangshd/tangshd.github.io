@@ -6,7 +6,7 @@
   <link href="https://engining.net/atom.xml" rel="self"/>
   
   <link href="https://engining.net/"/>
-  <updated>2022-08-03T11:16:14.100Z</updated>
+  <updated>2022-08-05T00:53:52.786Z</updated>
   <id>https://engining.net/</id>
   
   <author>
@@ -17,9 +17,36 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>MAC环境下使用hexo遇到的问题</title>
+    <link href="https://engining.net/2022/08/05/%E4%BD%BF%E7%94%A8hexo%E4%B8%AD%E7%9A%84%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/"/>
+    <id>https://engining.net/2022/08/05/%E4%BD%BF%E7%94%A8hexo%E4%B8%AD%E7%9A%84%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</id>
+    <published>2022-08-05T07:54:53.000Z</published>
+    <updated>2022-08-05T00:53:52.786Z</updated>
+    
+    <content type="html"><![CDATA[<p>因俗事缠身，很久未写博客了，最近有了点空闲，想把博客倒腾一下重新拉起来。<br>开干！</p><h2 id="当前环境"><a href="#当前环境" class="headerlink" title="当前环境"></a>当前环境</h2><p>系统： macOS Monterey<br>node: v18.6.0<br>npm:8.13.2<br>hexo-cli: 4.3.0<br>os: darwin 21.5.0 12. </p><h2 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h2><h3 id="node-sass-无法正常使用"><a href="#node-sass-无法正常使用" class="headerlink" title="node-sass 无法正常使用"></a>node-sass 无法正常使用</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">at module.exports (/Users/tangshd/WorkSpace/private/engining.net/node_modules/hexo-renderer-sass/node_modules/node-sass/lib/binding.js:13:13)</span><br></pre></td></tr></table></figure><p>解决方案：<br>    nodejs + npm 降级到14.7.0<br>    安装nvm 0.39.1 后， nvm use 14.7.0</p><h3 id="hexo-d-后，githupage-丢失重定向的域名"><a href="#hexo-d-后，githupage-丢失重定向的域名" class="headerlink" title="hexo d 后，githupage 丢失重定向的域名"></a>hexo d 后，githupage 丢失重定向的域名</h3><p>解决方案：<br>    在souce 根目录下新建CNMAE文件，然后在文件内填入域名，重新hexo d</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;因俗事缠身，很久未写博客了，最近有了点空闲，想把博客倒腾一下重新拉起来。&lt;br&gt;开干！&lt;/p&gt;
+&lt;h2 id=&quot;当前环境&quot;&gt;&lt;a href=&quot;#当前环境&quot; class=&quot;headerlink&quot; title=&quot;当前环境&quot;&gt;&lt;/a&gt;当前环境&lt;/h2&gt;&lt;p&gt;系统： macOS M</summary>
+      
+    
+    
+    
+    <category term="hexo" scheme="https://engining.net/categories/hexo/"/>
+    
+    
+    <category term="nvm" scheme="https://engining.net/tags/nvm/"/>
+    
+    <category term="node npm" scheme="https://engining.net/tags/node-npm/"/>
+    
+  </entry>
+  
+  <entry>
     <title>how to use hexo theme - pure</title>
-    <link href="https://engining.net/2022/07/24/post-title-with-whitespace/"/>
-    <id>https://engining.net/2022/07/24/post-title-with-whitespace/</id>
+    <link href="https://engining.net/2022/07/24/how-to-use-hexo-pure%20/"/>
+    <id>https://engining.net/2022/07/24/how-to-use-hexo-pure%20/</id>
     <published>2022-07-24T04:54:53.000Z</published>
     <updated>2022-08-03T11:16:14.100Z</updated>
     
